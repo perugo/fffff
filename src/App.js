@@ -1,15 +1,42 @@
+import React, { useEffect, useState } from 'react';
+import { Amplify, Auth, Hub } from 'aws-amplify';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
+import awsConfig from './aws-exports';
+
+Amplify.configure(awsConfig);
 
 function App() {
-  return (
+  const [user, setUser] = useState(null);
+  const [customState, setCustomState] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = Hub.listen("auth", ({ payload: { event, data } }) => {
+      switch (event) {
+        case "signIn":
+          setUser(data);
+          break;
+        case "signOut":
+          setUser(null);
+          break;
+        case "customOAuthState":
+          setCustomState(data);
+      }
+    });
+
+    Auth.currentAuthenticatedUser()
+      .then(currentUser => setUser(currentUser))
+      .catch(() => console.log("Not signed in"));
+
+    return unsubscribe;
+  }, []);
+
+    return (
     <div className="App">
-      <h3>Hello World GUYS!!</h3>
+      <button onClick={() => Auth.federatedSignIn()}>Open Hosted UI</button>
+      <button onClick={() => Auth.federatedSignIn({provider: CognitoHostedUIIdentityProvider.Google })}>Open Google</button>
+      <button onClick={() => Auth.signOut()}>Sign Out</button>
+      <div>{user && user.getUsername()}</div>
     </div>
   );
 }
-/*
-git remote add origin git@github.com:perugo/amplifytest.git
-git branch -M main
-git push -u origin main
-
-*/
 export default App;

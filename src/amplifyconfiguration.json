@@ -11,8 +11,8 @@
       "openid",
       "profile"
     ],
-    "redirectSignIn": "http://localhost:3000/hello/,https://www.simulationwave.com/hello/",
-    "redirectSignOut": "http://localhost:3000/fail,https://www.simulationwave.com/fail/",
+    "redirectSignIn": "https://www.simulationwave.com/hello/",
+    "redirectSignOut": "https://www.simulationwave.com/fail/",
     "responseType": "code"
   },
   "federationTarget": "COGNITO_USER_POOLS",
